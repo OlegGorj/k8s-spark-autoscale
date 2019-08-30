@@ -1,6 +1,6 @@
 # Spark Custom Autoscaler for Kubernetes cluster
 
-### The problem statement aka Why
+### The problem statement
 
 
 
