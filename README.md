@@ -1,18 +1,24 @@
-# Custom Autoscaler
+# Spark Custom Autoscaler for Kubernetes cluster
 
-## Spark Custom Autoscaler
-### Behavior description:
+### The problem statement aka Why
+
+
+
+### Background:
+
 This spark custom autoscaler is primarily used for jhub. On the one hand, the spark cluster will keep autoscaling to make sure there are always some idle spark workers for jhub users. Let the number of current spark workers in use be A, the number of idle spark workers set by us be I, then this spark autoscaler will keep
 the total number of the spark workers in the cluster being (A+I) as long as there is enough computing resource allocated for the spark autoscaler deployment.
 On the other hand, this spark autoscaler guarantees the spark workers used by jhub's users will never be killed while the spark cluster is scaling in. In other words, the spark drivers in jhub should never experience "worker loss" when the spark cluster scales in.
 
 ### Usage
+
 Change the current directory to `custom-autoscaling/spark/service-deployment` and run
 ```$xslt
 kubectl apply -f spark-custom-autoscaler.yaml -n spark
 ```
 
-### How spark custom autoscaler works
+### How Spark custom autoscaler works
+
 This custom autoscaler is implemented with k8s go-client. There are two primary components in this autoscaler, including `SparkMasterDeployment` and `SparkMasterDeployment`. Both these two components communicate with k8s cluster through `DeploymentClient`.
 
 `SparkMasterDeployment` create the necessary services (Spark UI and Spark service) and then create the k8s Deployment of Spark master, where the Spark UI service binds the Spark master UI (port 8080) and Spark service binds the Spark master service (with port 7077).
