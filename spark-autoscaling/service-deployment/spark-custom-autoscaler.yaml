@@ -1,0 +1,59 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "spark-custom-autoscaler"
+  labels:
+    component: "spark-custom-autoscaler"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        component: "spark-custom-autoscaler"
+    spec:
+      imagePullSecrets:
+        - name: image-pull-secret-ibm-cloud
+      nodeSelector:
+        pool: default
+      containers:
+        - name: "spark-custom-autoscaler"
+          image: "registry.ng.bluemix.net/artifactory-autoscaling/spark-autoscaling:sandbox"
+          command: ["/bin/sh","-c"]
+          args: ["/app"]
+          imagePullPolicy: Always
+          env:
+          - name: IS_IN_CLUSTER
+            value: "true"
+          - name: SPARK_CLUSTER_INFO_URL
+            value: "http://spark-webui.spark:8080/json"
+          - name: CLEAN_EXISTING_DEPLOYMENT
+            value: "true"
+          - name: SPARK_WORKER_CORES
+            value: "1"
+
+          - name: SPARK_WORKER_MEM
+            value: "2g"
+          - name: SPARK_WORKER_CONTAINER_CPU
+            value: "0.1"
+          - name: SPARK_WORKER_CONTAINER_MEM
+            value: "2Gi"
+          - name: SPARK_MASTER_CORES
+            value: "1"
+          - name: SPARK_MASTER_MEM
+            value: "2g"
+          - name: SPARK_MASTER_CONTAINER_CPU
+            value: "0.1"
+          - name: SPARK_MASTER_CONTAINER_MEM
+            value: "2Gi"
+          - name: SPARK_WORKER_OPTS
+            value: "-Dspark.cores.max=1"
+          - name: SPARK_WORKER_POOL
+            value: "spark-worker"
+          - name: SPARK_MASTER_POOL
+            value: "spark-master"
+          - name: "SPARK_MASTER_IMAGE"
+            value: "registry.ng.bluemix.net/artifactory/spark:2.2.3-0.2"
+          - name: "SPARK_WORKER_IMAGE"
+            value: "registry.ng.bluemix.net/artifactory/spark:2.2.3-0.2"
