@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "cluster-custom-autoscaler"
+  labels:
+    component: "cluster-custom-autoscaler"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        component: "cluster-custom-autoscaler"
+    spec:
+      imagePullSecrets:
+        - name: image-pull-secret-ibm-cloud
+      nodeSelector:
+        pool: default
+      containers:
+        - name: "cluster-custom-autoscaler"
+          image: "registry.ng.bluemix.net/artifactory-autoscaling/cluster-autoscaling:dev"
+          command: ["/bin/sh","-c"]
+          args: ["/app"]
+          imagePullPolicy: Always
+          env:
+            - name: IS_IN_CLUSTER
+              value: "true"
+            - name: WORKER_POOL_NAME
+              value: "jhub-user"
+            - name: NAMESPACE
+              value: "jhub"
+            - name: MAX_NODE
+              value: "5"
+            - name: MIN_NODE
+              value: "0"
+            - name: EXTRA_NODE
+              value: "2"
+            - name: IBM_CLOUD_API_URL
+              value: "https://containers.bluemix.net"
+            - name: IBM_CLOUD_CLUSTER_ID_OR_NAME
+              value: "k8s-husky-dev"
+            - name: IBM_CLOUD_IAM_URL
+              value: "https://iam.cloud.ibm.com/identity/token"
+            - name: IBM_CLOUD_API_KEY
+              value: "aaG_h7Ar1AS14FPdgssi_f2XCl5xQJIZob_lO4ooBvnZ"
+            - name: IBM_CLOUD_IAM_TOKEN
+              value: ""
+            - name: IGNORE_SCHEDULE
+              value: "false"
+            - name: TIME_ZONE
+              value: "America/Edmonton"
